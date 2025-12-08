@@ -4,15 +4,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProviderApplicationController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LoginController;
 
-Route::get('/', function () {
-    return redirect()->route('login');
+Route::get('/', [HomeController::class, 'index']);
+
+// Formulario público de proveedores (sin autenticación)
+Route::prefix('proveedores')->name('providers.')->group(function () {
+    Route::get('registro', [ProviderApplicationController::class, 'create'])->name('register');
+    Route::post('registro', [ProviderApplicationController::class, 'store'])->name('register.store');
+    Route::get('registro/gracias', [ProviderApplicationController::class, 'thankyou'])->name('register.thankyou');
 });
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', function () {
-        return view('login');
-    })->name('login');
+    Route::get('/login', [LoginController::class, 'show'])->name('login');
     
     Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.redirect');
     Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
