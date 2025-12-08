@@ -26,6 +26,8 @@ class ProviderApplication extends Model
         'user_approve_id',
         'bank_data_file_path',
         'tax_certificate_file_path',
+        'approval_notes',
+        'rejection_reason',
     ];
 
     protected $casts = [

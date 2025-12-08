@@ -39,6 +39,10 @@ return new class extends Migration
             $table->string('bank_data_file_path')->nullable();
             $table->string('tax_certificate_file_path')->nullable();
 
+            // Notas de aprobación/rechazo
+            $table->text('approval_notes')->nullable();
+            $table->text('rejection_reason')->nullable();
+
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProviderApplicationController;
+use App\Http\Controllers\PurchasingController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 
@@ -34,6 +35,18 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::resource('sites', SiteController::class);
         Route::post('sites/{site}/check', [SiteController::class, 'checkStatus'])->name('sites.check');
+    });
+
+    // Rutas de gestión de solicitudes de proveedores (solo compras)
+    Route::prefix('compras')->name('purchasing.')->middleware('role:purchasing')->group(function () {
+        Route::prefix('solicitudes')->name('applications.')->group(function () {
+            Route::get('/', [PurchasingController::class, 'index'])->name('index');
+            Route::get('{application}', [PurchasingController::class, 'show'])->name('show');
+            Route::get('{application}/revisar', [PurchasingController::class, 'edit'])->name('edit');
+            Route::post('{application}/aprobar', [PurchasingController::class, 'approve'])->name('approve');
+            Route::post('{application}/rechazar', [PurchasingController::class, 'reject'])->name('reject');
+            Route::get('{application}/descargar/{documentType}', [PurchasingController::class, 'downloadDocument'])->name('download');
+        });
     });
 });
 
