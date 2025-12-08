@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\SiteController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -17,9 +19,15 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Dashboard (muestra vista según rol del usuario)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     Route::post('/logout/google', [GoogleController::class, 'logout'])->name('google.logout');
+    
+    // Rutas de administración de sitios (solo admin)
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('sites', SiteController::class);
+        Route::post('sites/{site}/check', [SiteController::class, 'checkStatus'])->name('sites.check');
+    });
 });
+
