@@ -55,30 +55,17 @@ class DashboardController extends Controller
         $approvedApplications = ProviderApplication::where('status', 'approved')->count();
         $rejectedApplications = ProviderApplication::where('status', 'rejected')->count();
         
-        $normalChain = ProviderApplication::where('approval_chain', 'normal')->count();
-        $specialChain = ProviderApplication::where('approval_chain', 'special')->count();
-        
-        // Últimas 5 solicitudes pendientes
-        $recentPending = ProviderApplication::where('status', 'pending')
+        // Solicitudes pendientes paginadas de 10 en 10
+        $pendingList = ProviderApplication::where('status', 'pending')
             ->orderBy('created_at', 'DESC')
-            ->limit(5)
-            ->get();
-        
-        // Últimas 5 solicitudes procesadas
-        $recentProcessed = ProviderApplication::whereIn('status', ['approved', 'rejected'])
-            ->orderBy('updated_at', 'DESC')
-            ->limit(5)
-            ->get();
+            ->paginate(10);
 
         $data = [
             'totalApplications' => $totalApplications,
             'pendingApplications' => $pendingApplications,
             'approvedApplications' => $approvedApplications,
             'rejectedApplications' => $rejectedApplications,
-            'normalChain' => $normalChain,
-            'specialChain' => $specialChain,
-            'recentPending' => $recentPending,
-            'recentProcessed' => $recentProcessed,
+            'pendingList' => $pendingList,
         ];
         
         return view('dashboards.purchasing.dashboard', $data);

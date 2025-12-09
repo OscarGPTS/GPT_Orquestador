@@ -37,12 +37,10 @@ class PurchasingController extends Controller
         }
 
         // Ordenar por más recientes primero
-        $applications = $query->orderBy('created_at', 'DESC')->paginate(15);
+        $applications = $query->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('purchasing.applications.index', [
             'applications' => $applications,
-            'statuses' => ['pending' => 'Pendiente', 'approved' => 'Aprobado', 'rejected' => 'Rechazado'],
-            'approvalChains' => ['normal' => 'Normal', 'special' => 'Especial'],
         ]);
     }
 
@@ -53,7 +51,6 @@ class PurchasingController extends Controller
     {
         return view('purchasing.applications.show', [
             'application' => $application,
-            'approvalChains' => ['normal' => 'Normal', 'special' => 'Especial'],
         ]);
     }
 
@@ -64,7 +61,6 @@ class PurchasingController extends Controller
     {
         return view('purchasing.applications.edit', [
             'application' => $application,
-            'approvalChains' => ['normal' => 'Normal', 'special' => 'Especial'],
         ]);
     }
 
@@ -113,7 +109,7 @@ class PurchasingController extends Controller
     public function reject(Request $request, ProviderApplication $application)
     {
         $validated = $request->validate([
-            'rejection_reason' => 'required|string|max:500',
+            'rejection_reason' => 'nullable|string|max:500',
             'approval_chain' => 'required|in:normal,special',
         ]);
 
@@ -192,7 +188,7 @@ class PurchasingController extends Controller
      */
     private function sendRejectionNotification(
         ProviderApplication $application,
-        string $rejectionReason,
+        ?string $rejectionReason,
         string $approvalChain
     ): void {
         try {

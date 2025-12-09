@@ -55,7 +55,7 @@ class ProviderNotificationService
      */
     public function sendRejectionEmail(
         ProviderApplication $application,
-        string $rejectionReason,
+        ?string $rejectionReason,
         string $approvalChain
     ): bool {
         try {
@@ -114,7 +114,7 @@ class ProviderNotificationService
      */
     private function prepareRejectionEmailData(
         ProviderApplication $application,
-        string $rejectionReason,
+        ?string $rejectionReason,
         string $approvalChain
     ): array {
         return [
@@ -266,7 +266,11 @@ HTML;
      * Construir cuerpo HTML para correo de rechazo
      */
     private function buildRejectionEmailBody(array $data): string
-    {
+        {
+            $reasonHtml = $data['rejection_reason'] 
+                ? "<div class=\"reason\">\n            <h4 style=\"margin-top: 0; color: #ff6b6b;\">Motivo del Rechazo:</h4>\n            <p>{$data['rejection_reason']}</p>\n        </div>"
+                : '';
+
         return <<<HTML
 <!DOCTYPE html>
 <html>
@@ -300,10 +304,7 @@ HTML;
             <p><strong>Fecha de Solicitud:</strong> {$data['request_date']}</p>
         </div>
 
-        <div class="reason">
-            <h4 style="margin-top: 0; color: #ff6b6b;">Motivo del Rechazo:</h4>
-            <p>{$data['rejection_reason']}</p>
-        </div>
+        {$reasonHtml}
 
         <div class="section">
             <h3>Información General del Solicitante</h3>

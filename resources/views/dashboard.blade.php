@@ -117,57 +117,11 @@
             </div>
         </div>
 
-        <!-- Main Sections -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Left Column -->
-            <div class="lg:col-span-2">
-                <!-- Applications Section -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-2xl font-bold text-slate-900">Tus Aplicaciones</h2>
-                            <p class="text-slate-600 text-sm mt-1">Gestiona y monitorea todas tus aplicaciones</p>
-                        </div>
-                        <button class="px-6 py-2 rounded-xl bg-gradient-to-r from-brand-red to-red-600 text-white hover:shadow-lg transition-all duration-200 font-semibold flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Agregar Aplicación
-                        </button>
-                    </div>
+        @extends('layouts.app')
+        @section('title', 'Dashboard')
 
-                    <!-- Empty State -->
-                    <div class="text-center py-12">
-                        <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </div>
-                        <p class="text-slate-600 font-medium mb-2">No hay aplicaciones registradas</p>
-                        <p class="text-slate-500 text-sm">Comienza a agregar aplicaciones para orquestarlas</p>
-                    </div>
-                </div>
-
-                <!-- Activity Section -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Actividad Reciente</h2>
-                    
-                    <!-- Empty State -->
-                    <div class="text-center py-12">
-                        <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <p class="text-slate-600 font-medium">Sin actividad aún</p>
-                        <p class="text-slate-500 text-sm">La actividad aparecerá aquí cuando comiences a usar la aplicación</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column -->
-            <div>
-                <!-- Quick Stats -->
+        @section('content')
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
                     <h3 class="text-lg font-bold text-slate-900 mb-6">Información de Cuenta</h3>
                     
@@ -210,20 +164,5 @@
                 </div>
             </div>
         </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-slate-600 text-sm">© 2025 App Orchestrator. Todos los derechos reservados.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="text-slate-600 hover:text-brand-red transition-colors text-sm">Términos</a>
-                    <a href="#" class="text-slate-600 hover:text-brand-red transition-colors text-sm">Privacidad</a>
-                    <a href="#" class="text-slate-600 hover:text-brand-red transition-colors text-sm">Contacto</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+</main>
+@endsection

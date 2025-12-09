@@ -1,60 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - App Orchestrator</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-    <!-- Navbar -->
-    <nav class="bg-white shadow-lg border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-brand-red to-red-700">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <span class="text-2xl font-bold bg-gradient-to-r from-brand-red to-red-600 bg-clip-text text-transparent">App Orchestrator</span>
-                </div>
+@extends('layouts.app')
+@section('title', 'Dashboard Admin')
 
-                <!-- User Menu -->
-                <div class="flex items-center gap-4">
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">ADMIN</span>
-                    <div class="hidden sm:flex items-center gap-2">
-                        @if(auth()->user()->avatar)
-                            <img src="{{ auth()->user()->avatar }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                        @else
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-yellow to-yellow-500 flex items-center justify-center">
-                                <span class="text-sm font-bold text-slate-900">{{ substr(auth()->user()->name, 0, 1) }}</span>
-                            </div>
-                        @endif
-                        <div>
-                            <p class="text-sm font-medium text-slate-900">{{ auth()->user()->name }}</p>
-                            <p class="text-xs text-slate-500">{{ auth()->user()->email }}</p>
-                        </div>
-                    </div>
-
-                    <form action="{{ route('google.logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" 
-                                class="px-4 py-2 rounded-lg bg-red-50 text-brand-red hover:bg-red-100 transition-colors duration-200 font-medium text-sm flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                            </svg>
-                            <span class="hidden sm:inline">Cerrar sesión</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+@section('content')
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Welcome Section -->
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-slate-900 mb-2">
@@ -164,23 +112,8 @@
                         <p class="text-sm text-slate-600">Refrescar información</p>
                     </div>
                 </div>
-            </button>
-        </div>
-
-        <!-- Sites List -->
-        @if(isset($sites) && $sites->count() > 0)
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h2 class="text-2xl font-bold text-slate-900 mb-6">Sitios Monitoreados</h2>
-                <div class="space-y-4">
-                    @foreach($sites as $site)
-                        <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-xl 
-                                    @if($site->status === 'up') bg-green-100
-                                    @elseif($site->status === 'down') bg-red-100
-                                    @else bg-gray-100
-                                    @endif
-                                    flex items-center justify-center">
+        </main>
+        @endsection
                                     @if($site->status === 'up')
                                         <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
