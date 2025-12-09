@@ -28,6 +28,7 @@ class ProviderApplication extends Model
         'tax_certificate_file_path',
         'approval_notes',
         'rejection_reason',
+        'google_drive_folder_id',
     ];
 
     protected $casts = [

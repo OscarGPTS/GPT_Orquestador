@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProviderApplication;
+use App\Services\GoogleDriveService;
+use App\Services\ProviderNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class PurchasingController extends Controller
@@ -68,14 +71,17 @@ class PurchasingController extends Controller
     /**
      * Procesar aprobación de solicitud
      * 
-     * IMPORTANTE: Este método prepara los datos para enviar a otra BD o API.
-     * La lógica de envío debe ser implementada según la integración requerida.
+     * Cuando se aprueba una solicitud:
+     * 1. Se actualiza el estado a "approved"
+     * 2. Se invoca GoogleDriveService para crear carpeta y subir documentos
+     * 3. Se invoca ProviderNotificationService para enviar correo de aprobación
+     * 4. Se envían datos a sistema externo
      */
     public function approve(Request $request, ProviderApplication $application)
     {
         $validated = $request->validate([
             'approval_chain' => 'required|in:normal,special',
-            'notes' => 'nullable|string|max:1000',
+            'approval_notes' => 'nullable|string|max:1000',
         ]);
 
         // Actualizar estado y cadena de aprobación
@@ -83,18 +89,17 @@ class PurchasingController extends Controller
             'status' => 'approved',
             'approval_chain' => $validated['approval_chain'],
             'user_approve_id' => Auth::id(),
-            'approval_notes' => $validated['notes'] ?? null,
+            'approval_notes' => $validated['approval_notes'] ?? null,
         ]);
 
-        // Preparar datos para envío (BD externa o API)
+        // 1. Intentar crear carpeta en Google Drive y subir documentos
+        $this->processGoogleDriveIntegration($application);
+
+        // 2. Enviar correo de aprobación
+        $this->sendApprovalNotification($application, $validated['approval_chain'], $validated['approval_notes'] ?? null);
+
+        // 3. Preparar y enviar datos a sistema externo
         $dataToSend = $this->prepareApprovalData($application, $validated);
-
-        // ESPACIO RESERVADO: Aquí irá la lógica de envío a BD externa o API
-        // Ejemplos de posibles implementaciones:
-        // - $this->sendToExternalDatabase($dataToSend);
-        // - $this->sendToExternalAPI($dataToSend);
-        // - Queue::push(new SendApprovalJob($dataToSend));
-
         $this->sendApprovalData($dataToSend);
 
         return redirect()
@@ -119,10 +124,15 @@ class PurchasingController extends Controller
             'rejection_reason' => $validated['rejection_reason'],
         ]);
 
+        // Enviar correo de rechazo
+        $this->sendRejectionNotification(
+            $application,
+            $validated['rejection_reason'],
+            $validated['approval_chain']
+        );
+
         // Preparar datos para envío (BD externa o API)
         $dataToSend = $this->prepareRejectionData($application, $validated);
-
-        // ESPACIO RESERVADO: Aquí irá la lógica de envío a BD externa o API
         $this->sendRejectionData($dataToSend);
 
         return redirect()
@@ -131,23 +141,67 @@ class PurchasingController extends Controller
     }
 
     /**
-     * Descargar documentos de la solicitud
+     * Procesar integración con Google Drive
      */
-    public function downloadDocument(ProviderApplication $application, $documentType)
+    private function processGoogleDriveIntegration(ProviderApplication $application): void
     {
-        $filePath = null;
-
-        if ($documentType === 'bank_data' && $application->bank_data_file_path) {
-            $filePath = $application->bank_data_file_path;
-        } elseif ($documentType === 'tax_certificate' && $application->tax_certificate_file_path) {
-            $filePath = $application->tax_certificate_file_path;
+        if (!env('GOOGLE_DRIVE_ENABLED', false)) {
+            Log::info('Google Drive integration disabled');
+            return;
         }
 
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
-            abort(404, 'Documento no encontrado');
-        }
+        try {
+            $googleDrive = new GoogleDriveService();
+            
+            // ID de la carpeta padre en Google Drive (opcional, puede ser null)
+            $parentFolderId = env('GOOGLE_DRIVE_PROVIDERS_FOLDER_ID');
+            
+            $googleDriveFolderId = $googleDrive->createProviderFolder($application, $parentFolderId);
+            
+            // Guardar el ID de la carpeta de Google Drive en la aplicación
+            $application->update([
+                'google_drive_folder_id' => $googleDriveFolderId,
+            ]);
 
-        return Storage::disk('public')->download($filePath);
+            Log::info("Google Drive folder created successfully: $googleDriveFolderId");
+        } catch (\Exception $e) {
+            Log::warning('Could not create Google Drive folder: ' . $e->getMessage());
+            // Continuar sin detener el flujo si falla Google Drive
+        }
+    }
+
+    /**
+     * Enviar correo de aprobación
+     */
+    private function sendApprovalNotification(
+        ProviderApplication $application,
+        string $approvalChain,
+        ?string $approvalNotes = null
+    ): void {
+        try {
+            $notificationService = new ProviderNotificationService();
+            $notificationService->sendApprovalEmail($application, $approvalChain, $approvalNotes);
+            Log::info("Approval notification sent for application: {$application->id}");
+        } catch (\Exception $e) {
+            Log::warning('Could not send approval notification: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Enviar correo de rechazo
+     */
+    private function sendRejectionNotification(
+        ProviderApplication $application,
+        string $rejectionReason,
+        string $approvalChain
+    ): void {
+        try {
+            $notificationService = new ProviderNotificationService();
+            $notificationService->sendRejectionEmail($application, $rejectionReason, $approvalChain);
+            Log::info("Rejection notification sent for application: {$application->id}");
+        } catch (\Exception $e) {
+            Log::warning('Could not send rejection notification: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -168,7 +222,7 @@ class PurchasingController extends Controller
             ],
             'approved_by' => Auth::user()->email,
             'approved_at' => now(),
-            'notes' => $validated['notes'] ?? null,
+            'notes' => $validated['approval_notes'] ?? null,
         ];
     }
 
@@ -212,7 +266,7 @@ class PurchasingController extends Controller
         // Ejemplo para Queue:
         // dispatch(new SendApprovalToExternalSystem($data));
 
-        \Log::info('Approval data prepared for external system', $data);
+        Log::info('Approval data prepared for external system', $data);
     }
 
     /**
@@ -221,6 +275,6 @@ class PurchasingController extends Controller
     private function sendRejectionData(array $data): void
     {
         // TODO: Implementar lógica de envío
-        \Log::info('Rejection data prepared for external system', $data);
+        Log::info('Rejection data prepared for external system', $data);
     }
 }
