@@ -1,29 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Sitio - App Orchestrator</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-    <!-- Navbar -->
-    <nav class="bg-white shadow-lg border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-3">
-                    <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-brand-red to-red-700">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <span class="text-2xl font-bold bg-gradient-to-r from-brand-red to-red-600 bg-clip-text text-transparent">App Orchestrator</span>
-                </div>
-            </div>
-        </div>
-    </nav>
+@extends('layouts.app')
+@section('title', 'Editar Sitio')
 
-    <!-- Main Content -->
+@section('content')
     <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-6">
             <a href="{{ route('sites.index') }}" class="text-brand-red hover:text-red-700 flex items-center gap-2 mb-4">
@@ -132,5 +110,4 @@
             </form>
         </div>
     </main>
-</body>
-</html>
+@endsection

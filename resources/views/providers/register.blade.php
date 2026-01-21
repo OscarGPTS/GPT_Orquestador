@@ -38,8 +38,8 @@
             <div class="space-y-6 order-2 lg:order-1">
                 
                 <h1 class="text-5xl sm:text-6xl font-black leading-tight text-black">
-                    Únete a la red de
-                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-[#CF0A2C] via-[#F9BE00] to-[#CF0A2C]">proveedores GPT Services</span>
+                    Únete a la red de proveedores de
+                    <span class="block text-[#CF0A2C]"> GPT Services</span>
                 </h1>
                 <p class="text-lg text-slate-600 leading-relaxed">
                     Completa el formulario con tus datos, adjunta tu documentación en PDF y nuestro equipo revisará tu solicitud en <strong class="text-[#CF0A2C]">24 a 48 horas</strong>.
