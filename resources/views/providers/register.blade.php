@@ -44,31 +44,6 @@
                 <p class="text-lg text-slate-600 leading-relaxed">
                     Completa el formulario con tus datos, adjunta tu documentación en PDF y nuestro equipo revisará tu solicitud en <strong class="text-[#CF0A2C]">24 a 48 horas</strong>.
                 </p>
-
-                <div class="grid grid-cols-2 gap-4 pt-4">
-                    <div class="flex items-start gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                        <div class="w-10 h-10 rounded-lg bg-[#CF0A2C] flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-black">Revisión rápida</p>
-                            <p class="text-xs text-slate-500">Respuesta en 24-48h</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                        <div class="w-10 h-10 rounded-lg bg-[#F9BE00] flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-black">Documentos PDF</p>
-                            <p class="text-xs text-slate-500">Hasta 5MB por archivo</p>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Right: Image -->
@@ -87,7 +62,7 @@
 
             <!-- Form Card -->
             <div class="bg-white border border-slate-200 rounded-2xl shadow-xl shadow-red-100/40 overflow-hidden">
-                <div class="bg-gradient-to-r from-[#CF0A2C] to-[#F9BE00] px-6 py-4 text-white font-bold">Formulario de registro</div>
+                <div class="bg-red-700 px-6 py-4 text-white font-bold">Formulario de registro</div>
 
                 <div class="p-6 sm:p-8">
                     @if(session('success'))
@@ -222,46 +197,45 @@
 
         <!-- Trust Section -->
         <section class="bg-black text-white py-12 px-8 rounded-3xl shadow-2xl mt-6">
-            <div class="max-w-4xl mx-auto text-center space-y-6">
-                <h2 class="text-3xl font-black">¿Por qué trabajar con <span class="text-[#F9BE00]">GPT Services</span>?</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <div class="max-w-5xl mx-auto space-y-8">
+                <div class="text-center space-y-3">
+                    <p class="text-xs uppercase tracking-[0.2em] text-[#F9BE00] font-semibold">Confianza para proveedores</p>
+                    <h2 class="text-3xl sm:text-4xl font-black">¿Por qué trabajar con <span class="text-[#F9BE00]">GPT Services</span>?</h2>
+                    <p class="text-sm text-slate-300 max-w-3xl mx-auto">Tratamos cada alta con rigor operativo, cumplimiento normativo y seguimiento puntual. Tu información y tus entregables se gestionan con la misma disciplina que aplicamos a nuestros proyectos críticos.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-14 h-14 rounded-full bg-[#CF0A2C] flex items-center justify-center mx-auto mb-4">
+                        <div class="w-14 h-14 rounded-full bg-[#CF0A2C] flex items-center justify-center mb-4">
                             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-lg mb-2">Certificación ISO</h3>
-                        <p class="text-sm text-slate-300">Cumplimos con estándares internacionales de calidad y gestión.</p>
+                        <h3 class="font-bold text-lg mb-2">Cumplimiento y certificaciones</h3>
+                        <p class="text-sm text-slate-300">Prácticas alineadas a ISO y políticas de seguridad que resguardan tus datos y contratos.</p>
                     </div>
                     <div class="p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-14 h-14 rounded-full bg-[#F9BE00] flex items-center justify-center mx-auto mb-4">
+                        <div class="w-14 h-14 rounded-full bg-[#F9BE00] flex items-center justify-center mb-4">
                             <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-lg mb-2">Proceso ágil</h3>
-                        <p class="text-sm text-slate-300">Revisión y respuesta en menos de 48 horas.</p>
+                        <h3 class="font-bold text-lg mb-2">Procesos claros y trazables</h3>
+                        <p class="text-sm text-slate-300">Onboarding, evaluaciones y pagos con hitos definidos, SLA de respuesta y visibilidad del estado.</p>
                     </div>
                     <div class="p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-14 h-14 rounded-full bg-[#CF0A2C] flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                        <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-4">
+                            <svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-lg mb-2">Seriedad garantizada</h3>
-                        <p class="text-sm text-slate-300">Compromisos cumplidos y relaciones de largo plazo.</p>
+                        <h3 class="font-bold text-lg mb-2">Continuidad y respaldo</h3>
+                        <p class="text-sm text-slate-300">Equipo dedicado, soporte oportuno y acuerdos claros desde el inicio.</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-8 px-4 mt-16">
-        <div class="max-w-7xl mx-auto text-center text-sm">
-            <p>&copy; 2025 GPT Services. Todos los derechos reservados.</p>
-        </div>
-    </footer>
 </body>
 </html>

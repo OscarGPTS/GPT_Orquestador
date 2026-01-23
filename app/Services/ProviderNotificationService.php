@@ -10,6 +10,30 @@ use Illuminate\Support\Facades\Log;
 class ProviderNotificationService
 {
     /**
+     * Notificar al equipo de compras cuando llega una nueva solicitud
+     */
+    public function sendIntakeEmail(ProviderApplication $application): bool
+    {
+        try {
+            $subject = "Nueva solicitud de proveedor: {$application->company_name}";
+
+            $mailBody = $this->buildIntakeBody($application);
+
+            $documents = $this->getProviderDocuments($application);
+
+            return $this->sendEmailWithAttachments(
+                to: env('PURCHASING_INTAKE_EMAIL', 'purchasing@company.com'),
+                subject: $subject,
+                body: $mailBody,
+                documents: $documents
+            );
+        } catch (\Throwable $e) {
+            Log::error('Error al enviar correo de nueva solicitud: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Enviar correo de aprobación con datos y documentos
      * 
      * @param ProviderApplication $application
@@ -354,17 +378,17 @@ HTML;
         $documents = [];
 
         // Hoja de datos bancarios
-        if ($application->bank_data_file_path && Storage::exists($application->bank_data_file_path)) {
+        if ($application->bank_data_file_path && Storage::disk('public')->exists($application->bank_data_file_path)) {
             $documents[] = [
-                'path' => Storage::path($application->bank_data_file_path),
+                'path' => Storage::disk('public')->path($application->bank_data_file_path),
                 'name' => 'Hoja_de_datos_bancarios.pdf',
             ];
         }
 
         // Constancia de situación fiscal
-        if ($application->tax_certificate_file_path && Storage::exists($application->tax_certificate_file_path)) {
+        if ($application->tax_certificate_file_path && Storage::disk('public')->exists($application->tax_certificate_file_path)) {
             $documents[] = [
-                'path' => Storage::path($application->tax_certificate_file_path),
+                'path' => Storage::disk('public')->path($application->tax_certificate_file_path),
                 'name' => 'Constancia_de_situacion_fiscal.pdf',
             ];
         }
@@ -382,29 +406,107 @@ HTML;
         array $documents = []
     ): bool {
         try {
-            // Si no tienes un mailable configurado, puedes usar sendmail directamente
-            // Aquí se usa una aproximación simplificada con raw email
-            
-            // Para producción, considera crear un Mailable:
-            // Mail::send(new ApprovalNotificationMail($to, $subject, $body, $documents));
-            
-            // Por ahora, registrar en logs que se intentó enviar
-            Log::info("Intento de envío de correo: $subject a $to");
-            Log::debug('Documentos a adjuntar: ' . json_encode($documents));
-            
-            // TODO: Implementar envío real una vez configurado mailer
-            // Mail::raw($body, function($message) use ($to, $subject, $documents) {
-            //     $message->to($to)->subject($subject);
-            //     foreach ($documents as $doc) {
-            //         $message->attach($doc['path'], ['as' => $doc['name']]);
-            //     }
-            // });
-            
+            Mail::send([], [], function ($message) use ($to, $subject, $body, $documents) {
+                $message->to($to)->subject($subject)->setBody($body, 'text/html');
+
+                foreach ($documents as $doc) {
+                    if (! empty($doc['path']) && file_exists($doc['path'])) {
+                        $message->attach($doc['path'], [
+                            'as' => $doc['name'] ?? basename($doc['path']),
+                        ]);
+                    }
+                }
+            });
+
+            Log::info("Correo enviado: $subject a $to");
             return true;
-            
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
             Log::error('Error enviando correo: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Cuerpo del correo de nueva solicitud para compras
+     */
+    private function buildIntakeBody(ProviderApplication $application): string
+    {
+        $bankData = $application->bank_data_file_path ? 'Adjunta' : 'Pendiente';
+        $taxData = $application->tax_certificate_file_path ? 'Adjunta' : 'Pendiente';
+        $createdAt = $application->created_at?->format('d/m/Y H:i') ?? now()->format('d/m/Y H:i');
+        $website = $application->web_company ?: 'No proporcionado';
+        $bank = $application->bank ?: 'No proporcionado';
+        $bankAccount = $application->bank_account ?: 'No proporcionado';
+        $location = "{$application->street} {$application->number}, {$application->neighborhood}, {$application->municipality}, {$application->state}, {$application->country}";
+
+        return <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva solicitud de proveedor</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+        .container { max-width: 650px; margin: 30px auto; background: #fff; border-radius: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { background: #CF0A2C; color: #fff; padding: 32px 28px; text-align: center; }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: 0.4px; }
+        .content { padding: 32px 28px; }
+        .greeting { font-size: 15px; margin-bottom: 18px; color: #333; }
+        .info-box { background: #fafafa; border-left: 3px solid #CF0A2C; padding: 18px; margin: 22px 0; }
+        .info-box h3 { margin: 0 0 12px 0; color: #CF0A2C; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-row { margin: 8px 0; font-size: 13px; }
+        .info-label { font-weight: 600; color: #555; display: inline-block; min-width: 150px; }
+        .footer { background: #2c2c2c; padding: 24px; text-align: center; font-size: 12px; color: #999; }
+        .footer-accent { color: #F9BE00; font-weight: 600; }
+        .tag { display: inline-block; padding: 6px 10px; background: #111827; color: #fff; border-radius: 3px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nueva solicitud de alta de proveedor</h1>
+            <p style="margin:8px 0 0 0; font-size:12px; opacity:0.9;">Recibida: {$createdAt}</p>
+        </div>
+
+        <div class="content">
+            <p class="greeting">Equipo de Compras,</p>
+            <p style="font-size:14px; color:#444; margin:0 0 14px 0;">Se registró un nuevo proveedor desde el portal público. Revisa los datos y continúa el proceso de validación.</p>
+
+            <div class="info-box">
+                <h3>Datos del proveedor</h3>
+                <div class="info-row"><span class="info-label">Razón social:</span> {$application->company_name}</div>
+                <div class="info-row"><span class="info-label">RFC:</span> {$application->rfc}</div>
+                <div class="info-row"><span class="info-label">Sitio web:</span> $website</div>
+                <div class="info-row"><span class="info-label">Ubicación:</span> $location</div>
+            </div>
+
+            <div class="info-box">
+                <h3>Finanzas</h3>
+                <div class="info-row"><span class="info-label">Banco:</span> $bank</div>
+                <div class="info-row"><span class="info-label">Cuenta:</span> $bankAccount</div>
+                <div class="info-row"><span class="info-label">Clabe:</span> {$application->bank_account_number}</div>
+            </div>
+
+            <div class="info-box">
+                <h3>Documentos</h3>
+                <div class="info-row"><span class="info-label">Hoja de datos bancarios:</span> {$bankData}</div>
+                <div class="info-row"><span class="info-label">Constancia de situación fiscal:</span> {$taxData}</div>
+                <div class="info-row"><span class="info-label">Adjuntos:</span> <span class="tag">PDF</span> (se incluyen en este correo)</div>
+            </div>
+
+            <p style="font-size:13px; color:#555;">Para gestionar la solicitud, ingresa al panel de Compras en App Orchestrator.</p>
+        </div>
+
+        <div class="footer">
+            <p style="margin: 0 0 8px 0;">Este es un correo automático generado por App Orchestrator.</p>
+            <p style="margin: 0;">Equipo <span class="footer-accent">GPT Services</span> | Portal de Proveedores</p>
+            <p style="margin: 10px 0 0 0;">&copy; {date('Y')} Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>
+HTML;
     }
 }

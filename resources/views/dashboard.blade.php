@@ -99,17 +99,6 @@
             </div>
         </div>
 
-        <!-- Documentation Link -->
-        <div class="bg-gradient-to-br from-brand-yellow/10 to-yellow-100/5 rounded-2xl border border-brand-yellow/30 p-6">
-            <h3 class="text-lg font-bold text-slate-900 mb-3">¿Necesitas Ayuda?</h3>
-            <p class="text-slate-600 text-sm mb-4">Consulta nuestra documentación para aprender más sobre cómo usar App Orchestrator.</p>
-            <a href="#" class="inline-flex items-center gap-2 text-brand-red hover:text-red-700 font-semibold text-sm transition-colors">
-                Ver documentación
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </a>
-        </div>
+     
     </main>
 @endsection
-                    </div>

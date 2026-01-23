@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProviderApplicationRequest;
 use App\Models\ProviderApplication;
+use App\Services\ProviderNotificationService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class ProviderApplicationController extends Controller
 {
+    public function __construct(private ProviderNotificationService $providerNotificationService)
+    {
+    }
+
     /**
      * Mostrar formulario público de registro de proveedor
      */
@@ -30,7 +36,7 @@ class ProviderApplicationController extends Controller
         $bankDataPath = $request->file('bank_data_file')->store($folder, 'public');
         $taxCertificatePath = $request->file('tax_certificate_file')->store($folder, 'public');
 
-        ProviderApplication::create([
+        $application = ProviderApplication::create([
             'rfc' => $data['rfc'],
             'company_name' => $data['company_name'],
             'street' => $data['street'],
@@ -51,6 +57,13 @@ class ProviderApplicationController extends Controller
             'user_request_id' => null,
             'user_approve_id' => null,
         ]);
+
+        // Avisar al equipo de Compras (no bloquea al usuario)
+        try {
+            $this->providerNotificationService->sendIntakeEmail($application);
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo notificar a Compras sobre nueva solicitud: ' . $e->getMessage());
+        }
 
         return redirect()
             ->route('providers.register.thankyou')
